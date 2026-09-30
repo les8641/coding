@@ -28,8 +28,7 @@ def update_result_placeholders() -> None:
     result_units = [unit for unit in ("N", "kgf", "kN") if unit != selected_unit]
     first_result_unit, second_result_unit = result_units
     first_result.config(text=f"- {first_result_unit}")
-    prefix = "약 " if second_result_unit == "kgf" else ""
-    second_result.config(text=f"{prefix}- {second_result_unit}")
+    second_result.config(text=f"- {second_result_unit}")
 
 
 def convert_input() -> None:
@@ -47,10 +46,7 @@ def convert_input() -> None:
     result_units = [unit for unit in ("N", "kgf", "kN") if unit != selected_unit]
     first_result_unit, second_result_unit = result_units
     first_result.config(text=f"{converted[first_result_unit]:,.2f} {first_result_unit}")
-    prefix = "약 " if second_result_unit == "kgf" else ""
-    second_result.config(
-        text=f"{prefix}{converted[second_result_unit]:,.2f} {second_result_unit}"
-    )
+    second_result.config(text=f"{converted[second_result_unit]:,.2f} {second_result_unit}")
 
 
 def reset_converter() -> None:
@@ -185,7 +181,7 @@ def main() -> None:
     first_result.grid(row=3, column=0, columnspan=3, sticky="ew", pady=(22, 6))
 
     second_result = ttk.Label(
-        card, text="약 - kgf", anchor="w", width=27, style="Result.TLabel"
+        card, text="- kgf", anchor="w", width=27, style="Result.TLabel"
     )
     second_result.grid(row=4, column=0, columnspan=3, sticky="ew")
 
