@@ -39,7 +39,8 @@ py ".\force_converter - GUI수정.py"
   - 코드에서 `dict[str, float]` 형식의 타입 표기를 사용하므로 Python 3.9 이상이 필요합니다.
 - Python 표준 GUI 라이브러리인 Tkinter
   - 프로그램은 `tkinter`, `tkinter.ttk`, `tkinter.messagebox`를 사용합니다.
-- 별도의 외부 Python 패키지는 코드에서 사용하지 않습니다.
+- `force_converter - GUI수정.py`는 별도의 외부 Python 패키지를 사용하지 않습니다.
+- `load_analyzer.py`는 응력 그래프 저장을 위해 외부 패키지 `matplotlib`가 필요합니다.
 - GUI를 표시할 수 있는 데스크톱 환경이 필요합니다.
 
 ## 정상 입력 예시
@@ -70,3 +71,68 @@ py ".\force_converter - GUI수정.py"
 | `-inf` | 유한하지 않은 값이므로 오류 창 표시 |
 
 오류가 발생하면 해당 변환은 수행되지 않습니다.
+
+## CSV 하중 분석기
+
+`load_analyzer.py`는 하중 측정 CSV를 읽어 응력을 계산하고, 결과 CSV와 시간-응력 그래프를 저장하는 프로그램입니다. 기본 입력 파일은 `load_bad.csv`이며, 명령줄에서 다른 CSV 파일을 지정할 수 있습니다.
+
+### 입력 CSV 형식과 단위
+
+CSV에는 다음 두 열이 정확히 있어야 합니다.
+
+| 열 이름 | 의미 | 단위 |
+|:---|:---|:---:|
+| `time_s` | 측정 시간 | s |
+| `force_N` | 하중 | N |
+
+### 필요한 라이브러리
+
+- Python 표준 라이브러리: `argparse`, `csv`, `math`, `pathlib`, `typing`
+- 외부 라이브러리: `matplotlib`
+
+Matplotlib이 설치되어 있지 않다면 다음 명령으로 설치합니다.
+
+```powershell
+python -m pip install matplotlib
+```
+
+### 실행 명령
+
+기본 입력 파일(`load_data.csv`)을 분석하려면 다음과 같이 실행합니다.
+
+```powershell
+cd "C:\Python\week4"
+python ".\load_analyzer.py"
+```
+
+다른 CSV 파일을 분석할 때는 파일 경로를 인자로 전달합니다.
+
+```powershell
+python ".\load_analyzer.py" ".\load_data.csv"
+```
+
+### 계산 및 출력
+
+- 단면적은 코드의 `AREA_MM2 = 100.0`으로 설정되어 있으며 단위는 `mm²`입니다.
+- 응력은 `force_N / AREA_MM2`로 계산되며 결과 단위는 `MPa`입니다.
+- 기준 응력은 `6 MPa`이며, 이를 초과하는 유효 데이터 개수를 출력합니다.
+- 데이터 개수, 최대 하중과 시간, 최대 응력과 시간, 기준 응력 초과 데이터 개수를 출력합니다.
+- 그래프의 x축은 `Time (s)`, y축은 `Stress (MPa)`이며 각 점을 선으로 연결합니다. 최대 응력 점은 강조 표시되고 값이 그래프에 표시됩니다.
+
+### 출력 파일
+
+분석이 완료되면 프로그램 파일과 같은 폴더에 다음 파일을 저장합니다.
+
+- `load_result.csv`: 유효한 행의 `time_s`, `force_N`, `stress_MPa` 데이터
+- `stress_plot.png`: 시간-응력 그래프
+
+입력 CSV는 읽기만 하며 덮어쓰지 않습니다.
+
+### 오류 처리 규칙
+
+- CSV 열 이름이 `time_s`, `force_N`과 정확히 일치하지 않으면 오류로 처리합니다.
+- `time_s` 또는 `force_N`이 빈칸, 숫자가 아닌 값, `NaN` 또는 무한대이면 해당 행을 제외합니다.
+- 제외한 행마다 원본 CSV의 행 번호, 문제가 있는 열 이름, 문제 값을 출력합니다.
+- 제외한 행은 응력 계산, 결과 CSV, 그래프에서 모두 제외합니다.
+- 제외한 행 수와 유효한 데이터 수를 출력합니다.
+- 유효한 데이터가 하나도 없으면 계산과 그래프 생성을 중단하고 안내 메시지만 출력합니다.
