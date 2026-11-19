@@ -1,0 +1,5 @@
+method,evaluation_rows,hit_true_positive,miss_false_negative,false_alarm_false_positive,correct_negative,accuracy,precision,recall
+always_0,744,0,39,0,705,0.9475806452,N/A,0.0000000000
+current_wind_ge_4,744,9,30,30,675,0.9193548387,0.2307692308,0.2307692308
+logistic_regression_0.50,744,4,35,6,699,0.9448924731,0.4000000000,0.1025641026
+logistic_regression_0.20,744,15,24,41,664,0.9126344086,0.2678571429,0.3846153846
